@@ -1,0 +1,19 @@
+{
+  "name": "hw1",
+  "version": "1.0.0",
+  "description": "Implements a Twitter bot to interact with @FreedoniaNews.",
+  "main": "bot.js",
+  "keywords": [
+    "twitter",
+    "bot"
+  ],
+  "author": "Sean K. Walker",
+  "license": "ISC",
+  "dependencies": {
+    "sentiment": "^5.0.1",
+    "twit": "^2.2.11"
+  },
+  "scripts": {
+    "start": "node bot.js"
+  }
+}
