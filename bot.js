@@ -23,12 +23,19 @@ const sentimentAnalyzer = new sentiment();
 
 // bot parameters
 const TARGET_HANDLE = "FreedoniaNews";
-const NUM_TWEETS = 3;
+const NUM_TWEETS = 200;
 const TARGETS = [
     { name: "Sylvania", stance: "support" },
     { name: "Ambassador Trentino", stance: "support" },
     { name: "Freedonia", stance: "oppose" },
     { name: "Rufus T. Firefly", stance: "oppose" }
+];
+const REPLIES = [
+    "stop spreading fake news! 😑👎",
+    "fake news. please ban this account!! @jack 🔨",
+    "lies! lies! lies! 🤬",
+    "there's not an ounce of truth to this!!",
+    "try posting something truthful once in a while #hottip #deleteyouraccount"
 ];
 
 /*
@@ -85,6 +92,23 @@ const evaluateTweet = (tweetContent, tweetSentiment, thing, shouldSupport) => {
     return "neutral";
 };
 
+/*
+ * Tweet reply to `targetTweet` authored by `targetTweetUsername`.
+ */
+const tweetReply = (targetTweetUsername, targetTweetId) => {
+    let replyMessage = "@" + targetTweetUsername + " ";
+    replyMessage += REPLIES[Math.floor(Math.random() * REPLIES.length)];
+
+    twitterClient.post("statuses/update", {
+        status: replyMessage,
+        in_reply_to_status_id: targetTweetId
+    }, (err) => {
+        if (err) {
+            console.log("error replying to tweet");
+        }
+    });
+};
+
 const main = async () => {
     // get all recent tweets
     let tweets = await getTweets(NUM_TWEETS, TARGET_HANDLE);
@@ -104,13 +128,9 @@ const main = async () => {
             return response !== "neutral";
         });
 
-        // post a reply with the matching sentiment; if neutral, do not reply
-        if (response === "positive") {
-            console.log("we are happy with this tweet 👍");
-        } else if (response === "negative") {
-            console.log("we are not happy about this tweet 😡");
-        } else {
-            console.log("we are neutral about this tweet 🤷‍");
+        // post a reply if we feel negatively about this tweet
+        if (response === "negative") {
+            tweetReply(tweet.user.screen_name, tweet.id_str);
         }
     });
 };
