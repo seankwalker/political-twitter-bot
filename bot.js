@@ -75,7 +75,6 @@ const analyzeSentiment = (tweetContent) => {
 
 const evaluateTweet = (tweetContent, tweetSentiment, thing, shouldSupport) => {
     if (tweetContent.toLowerCase().includes(thing.toLowerCase())) {
-        console.log(shouldSupport);
         if (shouldSupport) {
             return (tweetSentiment === "positive" ? "positive" : "negative");
         } else {
@@ -93,7 +92,6 @@ const main = async () => {
     // analyze sentiment of each retrieved tweet
     tweets.forEach(tweet => {
         let tweetSentiment = analyzeSentiment(tweet.text);
-        console.log("tweet:", tweet.text, "\nsentiment:", tweetSentiment);
 
         // check if we support or oppose the figure this tweet is about
         // as per the spec, each tweet will be unambiguously directed at a
@@ -101,7 +99,6 @@ const main = async () => {
         // thus, we can break as soon as we discover a non-neutral take
         let response = "neutral";
         TARGETS.some(target => {
-            console.log(target);
             response = evaluateTweet(tweet.text.toLowerCase(), tweetSentiment,
                 target.name, (target.stance === "support"));
             return response !== "neutral";
