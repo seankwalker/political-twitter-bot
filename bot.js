@@ -80,9 +80,13 @@ const analyzeSentiment = (tweetContent) => {
     }
 };
 
-const evaluateTweet = (tweetContent, tweetSentiment, thing, shouldSupport) => {
-    if (tweetContent.toLowerCase().includes(thing.toLowerCase())) {
-        if (shouldSupport) {
+/*
+ * Evaluates our response to a given tweet based on tweet sentiment and our
+ * feeling about the subject of the tweet.
+ */
+const evaluateTweet = (tweetContent, tweetSentiment, subject, support) => {
+    if (tweetContent.toLowerCase().includes(subject.toLowerCase())) {
+        if (support) {
             return (tweetSentiment === "positive" ? "positive" : "negative");
         } else {
             return (tweetSentiment === "positive" ? "negative" : "positive");
@@ -96,22 +100,25 @@ const evaluateTweet = (tweetContent, tweetSentiment, thing, shouldSupport) => {
  * Tweet reply to `targetTweet` authored by `targetTweetUsername`.
  */
 const tweetReply = (targetTweetUsername, targetTweetId) => {
+    // choose random message from pre-written replies
     let replyMessage = "@" + targetTweetUsername + " ";
     replyMessage += REPLIES[Math.floor(Math.random() * REPLIES.length)];
 
     twitterClient.post("statuses/update", {
         status: replyMessage,
         in_reply_to_status_id: targetTweetId
-    }, (err) => {
-        if (err) {
-            console.log("error replying to tweet");
-        }
     });
 };
 
+/*
+ * Main function.
+ */
 const main = async () => {
     // get all recent tweets
     let tweets = await getTweets(NUM_TWEETS, TARGET_HANDLE);
+    if (tweets === null) {
+        return;
+    }
 
     // analyze sentiment of each retrieved tweet
     tweets.forEach(tweet => {
